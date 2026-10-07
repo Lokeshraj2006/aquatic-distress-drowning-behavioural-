@@ -80,7 +80,8 @@ Interactive diagrams (open in a browser):
 ### Local (Windows, macOS, Linux; Python 3.11)
 
 ```powershell
-cd ps07
+git clone https://github.com/Lokeshraj2006/aquatic-distress-drowning-behavioural-.git
+cd aquatic-distress-drowning-behavioural-
 py -3.11 -m venv .venv
 .venv\Scripts\activate              # macOS / Linux: source .venv/bin/activate
 # NVIDIA GPU? Install torch first from https://pytorch.org (pick your CUDA version).
