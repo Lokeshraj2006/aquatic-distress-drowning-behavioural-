@@ -1,4 +1,0 @@
-clip,entity_description,behavior,start_s,end_s
-synthetic_safety.mp4,pedestrian #1 and cyclist #2,near_miss,5.9,6.7
-synthetic_safety.mp4,cyclist #2 riding fast on the shop floor,running,6.0,8.2
-synthetic_safety.mp4,worker #3 (orange),fall,18.2,24.0

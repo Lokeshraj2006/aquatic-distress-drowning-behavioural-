@@ -9,13 +9,13 @@ video:
   max_seconds: 0           # 0 = whole video; >0 = only the first N seconds
 
 model:
-  weights: yolo11n.pt      # pretrained COCO model, downloads automatically on first run
+  weights: models/yolo11n.pt      # pretrained COCO model, downloads automatically on first run
   device: auto             # auto | cpu | 0 (first GPU)
   conf: 0.30               # minimum detection confidence
   iou: 0.50
   imgsz: 640
   tracker: bytetrack_custom.yaml
-  pose_weights: yolo11n-pose.pt
+  pose_weights: models/yolo11n-pose.pt
   classes: [0]             # COCO class ids to track (0 = person); presets change this
 
 features:
