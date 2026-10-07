@@ -1,0 +1,45 @@
+# Scenario preset: traffic and pedestrians (road, crossing, car park entrance).
+#
+# The headline is the NEAR MISS between a pedestrian and a vehicle: a person and a car,
+# bus, truck, bicycle or motorbike that came very close while moving relative to each
+# other, even though nobody was hit. Also: speeding, stopped too long, entering a
+# restricted lane (draw it with zone_picker.py) and congestion.
+#
+# Use it with:  python run.py --video samples/person-bicycle-car-detection.mp4 --scenario traffic
+#
+# Names come from the detected class ("Car #7", "Person #3"). Speeds and distances are in
+# BODY-LENGTHS (the longest side of the box). The camera must be fixed and the road scene
+# is measured in the image plane, so treat "speeding" as "fast relative to its own size".
+
+scenario:
+  name: traffic
+  title: "Traffic and pedestrians"
+  entity_word: Object                 # only used for groups; single objects use their class name
+  unit_word: body-lengths
+  behavior_names:
+    near_miss: "Near miss"
+    running: "Speeding"
+    loitering: "Stopped too long"
+    zone_intrusion: "Entered restricted lane"
+    crowding: "Congestion"
+
+model:
+  # 0 person, 1 bicycle, 2 car, 3 motorbike, 5 bus, 7 truck
+  classes: [0, 1, 2, 3, 5, 7]
+
+behaviors:
+  near_miss:                          # headline feature of this preset
+    enabled: true
+    vulnerable_classes: [0]           # pedestrians are who can get hurt
+    other_classes: [1, 2, 3, 5, 7]    # by a bicycle, car, motorbike, bus or truck
+  running:                            # shown as "Speeding"
+    start_speed_bh_s: 3.0
+    end_speed_bh_s: 2.4
+  loitering:                          # shown as "Stopped too long"
+    radius_bh: 0.3
+    min_duration_s: 30.0
+  fall:
+    enabled: false                    # vehicles are wider than tall: the person-down rule does not apply
+  crowding:                           # shown as "Congestion"
+    min_count: 8
+    # whole_frame: true               # uncomment to count the whole frame when no zone is drawn

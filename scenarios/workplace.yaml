@@ -1,0 +1,41 @@
+# Scenario preset: industrial / workplace safety.
+#
+# The headline here is the NEAR MISS: a worker and a vehicle that came dangerously close
+# while moving relative to each other, even though nothing was hit. Fall, running on the
+# shop floor and entering a machine danger zone are flagged as well.
+#
+# Use it with:  python run.py --video samples/clip.mp4 --zones danger_zone.json --scenario workplace
+#
+# Honest notes:
+#  * The stock COCO detector has NO forklift class. Cars, trucks, buses, bicycles and
+#    motorbikes stand in for vehicles. Real forklifts need a custom-trained detector
+#    (swap `model.weights`; the rules do not change).
+#  * Vehicles are tracked too, so the loitering / running rules also see them: a parked
+#    truck can show up as "Loitering". Read the entity name ("Person #3", "Truck #7").
+
+scenario:
+  name: workplace
+  title: "Industrial / workplace safety"
+  entity_word: Person
+  unit_word: body-heights
+  behavior_names:
+    near_miss: "Near miss"
+    zone_intrusion: "Entered machine danger zone"   # draw the danger zone with zone_picker.py
+    running: "Running on the shop floor"
+    loitering: "Loitering"
+    fall: "Fall / person down"
+
+model:
+  # Track people AND vehicles, otherwise a worker-versus-vehicle near miss cannot be seen.
+  # 0 person, 1 bicycle, 2 car, 3 motorbike, 5 bus, 7 truck
+  classes: [0, 1, 2, 3, 5, 7]
+
+behaviors:
+  near_miss:                          # headline feature of this preset
+    enabled: true
+    vulnerable_classes: [0]           # workers are who can get hurt
+    other_classes: [0, 1, 2, 3, 5, 7] # ...by a person, bicycle, car, motorbike, bus or truck
+  fall:
+    enabled: true                     # a worker down on the floor is always high severity
+  loitering:
+    min_duration_s: 20.0              # standing at one spot is normal at a workstation: allow 20 s

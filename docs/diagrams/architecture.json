@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PS07 Behaviour Understanding – System Architecture",
+    "output": "architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "video",
+      "type": "external",
+      "label": "Video Input",
+      "sublabel": "mp4 / webcam",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        130,
+        64
+      ]
+    },
+    {
+      "id": "reader",
+      "type": "backend",
+      "label": "Frame Reader",
+      "sublabel": "OpenCV · 640w",
+      "pos": [
+        230,
+        300
+      ],
+      "size": [
+        130,
+        64
+      ],
+      "tag": "every 2nd frame"
+    },
+    {
+      "id": "detector",
+      "type": "backend",
+      "label": "Detector",
+      "sublabel": "YOLO11n · person",
+      "pos": [
+        420,
+        300
+      ],
+      "size": [
+        130,
+        64
+      ]
+    },
+    {
+      "id": "tracker",
+      "type": "backend",
+      "label": "Tracker",
+      "sublabel": "ByteTrack IDs",
+      "pos": [
+        610,
+        300
+      ],
+      "size": [
+        130,
+        64
+      ]
+    },
+    {
+      "id": "features",
+      "type": "backend",
+      "label": "Feature Extractor",
+      "sublabel": "speed · dwell · feet",
+      "pos": [
+        800,
+        300
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "rules",
+      "type": "backend",
+      "label": "Behaviour Engine",
+      "sublabel": "3 rules + baseline",
+      "pos": [
+        1000,
+        300
+      ],
+      "size": [
+        140,
+        64
+      ],
+      "tag": "core logic"
+    },
+    {
+      "id": "zonepicker",
+      "type": "frontend",
+      "label": "Zone Picker",
+      "sublabel": "click 4 points",
+      "pos": [
+        800,
+        120
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "config",
+      "type": "database",
+      "label": "Config",
+      "sublabel": "config.yaml · zones.json",
+      "pos": [
+        1000,
+        120
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "events",
+      "type": "backend",
+      "label": "Event Builder",
+      "sublabel": "merge · confidence",
+      "pos": [
+        1000,
+        480
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "eventsjson",
+      "type": "database",
+      "label": "events.json",
+      "sublabel": "who · what · when",
+      "pos": [
+        800,
+        480
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "renderer",
+      "type": "frontend",
+      "label": "Renderer",
+      "sublabel": "video · snapshots · cards",
+      "pos": [
+        1000,
+        640
+      ],
+      "size": [
+        140,
+        64
+      ]
+    },
+    {
+      "id": "evaluator",
+      "type": "backend",
+      "label": "Evaluator",
+      "sublabel": "precision · recall",
+      "pos": [
+        610,
+        480
+      ],
+      "size": [
+        130,
+        64
+      ],
+      "tag": "vs labels.csv"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Local pipeline · python run.py (CPU or GPU)",
+      "wraps": [
+        "reader",
+        "detector",
+        "tracker",
+        "features",
+        "rules",
+        "events"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "video-frames",
+      "from": "video",
+      "to": "reader",
+      "label": "frames",
+      "variant": "emphasis"
+    },
+    {
+      "id": "reader-detector",
+      "from": "reader",
+      "to": "detector",
+      "variant": "emphasis"
+    },
+    {
+      "id": "detector-tracker",
+      "from": "detector",
+      "to": "tracker",
+      "label": "boxes",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tracker-features",
+      "from": "tracker",
+      "to": "features",
+      "label": "IDs",
+      "variant": "emphasis"
+    },
+    {
+      "id": "features-rules",
+      "from": "features",
+      "to": "rules",
+      "variant": "emphasis"
+    },
+    {
+      "id": "zone-config",
+      "from": "zonepicker",
+      "to": "config",
+      "label": "save"
+    },
+    {
+      "id": "config-rules",
+      "from": "config",
+      "to": "rules",
+      "label": "thresholds",
+      "variant": "dashed",
+      "labelAt": [
+        1070,
+        242
+      ]
+    },
+    {
+      "id": "rules-events",
+      "from": "rules",
+      "to": "events",
+      "label": "raw flags",
+      "variant": "emphasis",
+      "labelAt": [
+        1070,
+        422
+      ]
+    },
+    {
+      "id": "events-json",
+      "from": "events",
+      "to": "eventsjson",
+      "label": "write"
+    },
+    {
+      "id": "events-render",
+      "from": "events",
+      "to": "renderer"
+    },
+    {
+      "id": "json-eval",
+      "from": "eventsjson",
+      "to": "evaluator",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Perception",
+      "items": [
+        "YOLO11n finds people (pretrained, no training)",
+        "ByteTrack keeps one ID per person"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Reasoning",
+      "items": [
+        "Loitering, zone intrusion, running",
+        "Speeds in body-heights/s, times in seconds"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Evidence",
+      "items": [
+        "events.json with times and confidence",
+        "Annotated video, snapshots with trails"
+      ]
+    }
+  ]
+}

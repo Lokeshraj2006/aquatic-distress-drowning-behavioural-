@@ -1,0 +1,43 @@
+# Scenario preset: public safety (a square, station hall, market or stadium gate).
+#
+# - Crowding counts the WHOLE picture when no zone is drawn (crowd gathering).
+# - Running is reported as "Fleeing / running" (a group suddenly running is a warning sign).
+# - Falls (someone collapsed), loitering near a restricted door, and near misses between people
+#   and bikes or motorbikes are reported too.
+# Status: PRESET ONLY. The rules are tested on the Intel clips and synthetic data; crowding has not
+# been tried on real crowd footage (dense crowds make the detector miss people).
+#
+# Use it with:  python run.py --video clip.mp4 --scenario public_safety   (add --zones door.json for a restricted door)
+
+scenario:
+  name: public_safety
+  title: "Public safety (crowds, fleeing, falls)"
+  entity_word: Object                 # people and two-wheelers are tracked
+  unit_word: body-heights
+  behavior_names:
+    crowding: "Crowd gathering"
+    running: "Fleeing / running"
+    loitering: "Loitering"
+    zone_intrusion: "Entered restricted area"
+    fall: "Person collapsed"
+
+model:
+  classes: [0, 1, 3]                  # person, bicycle, motorbike
+
+behaviors:
+  crowding:
+    enabled: true
+    min_count: 10
+    min_duration_s: 10.0
+    whole_frame: true                 # no zone needed
+  loitering:
+    enabled: true
+    min_duration_s: 30.0
+  running:
+    enabled: true
+  fall:
+    enabled: true
+  near_miss:
+    enabled: true
+    vulnerable_classes: [0]
+    other_classes: [1, 3]             # bikes and motorbikes among pedestrians

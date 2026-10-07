@@ -1,0 +1,30 @@
+# Streamlit settings for the PS07 web UI (run it with: streamlit run app.py).
+
+[server]
+maxUploadSize = 500            # MB; uploaded videos are saved to samples/uploads/
+showEmailPrompt = false        # a fresh laptop must not stop at "Email:" in the terminal before the page starts
+
+[browser]
+gatherUsageStats = false       # no telemetry: the demo must work offline and look the same everywhere
+
+# A clean light theme. Only one [theme] section is defined, so the app stays light on every machine.
+[theme]
+base = "light"
+primaryColor = "#1a56db"       # Run button, links, active tab (dark enough for white button text)
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f3f5f9"
+textColor = "#1f2933"
+borderColor = "#d9dee7"
+font = "sans-serif"
+baseRadius = "8px"
+
+# Colours used by the severity badges and coloured text.
+redColor = "#d92d20"
+orangeColor = "#c2410c"
+greenColor = "#1a7f37"
+blueColor = "#1a56db"
+violetColor = "#7a3fd1"
+grayColor = "#667085"
+
+[client]
+toolbarMode = "minimal"        # hides the "Deploy" button and developer menu items

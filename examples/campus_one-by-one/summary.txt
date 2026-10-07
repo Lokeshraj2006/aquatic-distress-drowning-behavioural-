@@ -1,0 +1,6 @@
+Video one-by-one-person-detection.mp4 (02:19), 6 people seen. 6 incidents:
+- 00:06-00:19 Person #1: Lingered inside the restricted zone [HIGH]
+- 00:23-00:44 Person #5: Lingered inside the restricted zone [HIGH]
+- 00:50-01:09 Person #7: Lingered inside the restricted zone [HIGH]
+- ...and 3 more (see report.html).
+No other unusual activity.

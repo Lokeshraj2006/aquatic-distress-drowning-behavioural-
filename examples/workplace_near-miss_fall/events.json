@@ -1,0 +1,397 @@
+{
+  "video": "samples\\synthetic_safety.mp4",
+  "meta": {
+    "video": "samples\\synthetic_safety.mp4",
+    "duration_s": 30.0,
+    "fps": 25.0,
+    "orig_size": [
+      1280,
+      720
+    ],
+    "proc_size": [
+      640,
+      360
+    ],
+    "frames_processed": 375,
+    "n_tracks": 4,
+    "device": "synthetic",
+    "model": "yolo11n.pt",
+    "runtime_s": 9.6,
+    "generated": "2026-10-07T03:03:08",
+    "stride": 2,
+    "zones": [],
+    "settings": {
+      "scenario": "workplace (Industrial / workplace safety)",
+      "tracked_classes": "person, bicycle, car, motorbike, bus, truck",
+      "behaviours_enabled": "loitering, zone_intrusion, running, fall, crowding, near_miss",
+      "resize_width_px": 640,
+      "frame_stride": 2,
+      "detector_conf": 0.3,
+      "loitering_radius_bh": 0.5,
+      "loitering_min_duration_s": 20.0,
+      "zone_min_duration_s": 1.0,
+      "running_start_speed_bh_s": 1.8,
+      "running_end_speed_bh_s": 1.4,
+      "running_min_duration_s": 1.0,
+      "fall_down_min_aspect": 1.2,
+      "fall_min_down_s": 2.0,
+      "crowding_min_count": 5,
+      "crowding_min_duration_s": 5.0,
+      "near_miss_distance_bh": 0.6,
+      "near_miss_min_rel_speed_bh_s": 0.8,
+      "near_miss_ttc_s": 1.0,
+      "size_unit": "body-heights",
+      "merge_gap_s": 1.5,
+      "near_miss_ratio": 0.7,
+      "baseline_min_tracks": 4,
+      "baseline_z_threshold": 3.0
+    },
+    "scenario": {
+      "name": "workplace",
+      "title": "Industrial / workplace safety"
+    },
+    "privacy": false,
+    "processing_fps": null,
+    "pose": false,
+    "config": {
+      "video": {
+        "resize_width": 640,
+        "frame_stride": 2,
+        "max_seconds": 0
+      },
+      "model": {
+        "weights": "yolo11n.pt",
+        "device": "auto",
+        "conf": 0.3,
+        "iou": 0.5,
+        "imgsz": 640,
+        "tracker": "bytetrack_custom.yaml",
+        "pose_weights": "yolo11n-pose.pt",
+        "classes": [
+          0,
+          1,
+          2,
+          3,
+          5,
+          7
+        ]
+      },
+      "features": {
+        "smoothing_s": 0.5,
+        "speed_window_s": 0.5,
+        "max_gap_s": 1.0,
+        "min_track_s": 1.0,
+        "min_box_h_px": 20,
+        "scale": "max_side"
+      },
+      "behaviors": {
+        "loitering": {
+          "enabled": true,
+          "radius_bh": 0.5,
+          "min_duration_s": 20.0,
+          "bridge_gap_s": 3.0
+        },
+        "zone_intrusion": {
+          "enabled": true,
+          "min_duration_s": 1.0
+        },
+        "running": {
+          "enabled": true,
+          "start_speed_bh_s": 1.8,
+          "end_speed_bh_s": 1.4,
+          "min_duration_s": 1.0
+        },
+        "baseline": {
+          "enabled": true,
+          "min_tracks": 4,
+          "z_threshold": 3.0
+        },
+        "fall": {
+          "enabled": true,
+          "down_min_aspect": 1.2,
+          "upright_max_aspect": 0.8,
+          "transition_s": 2.0,
+          "min_down_s": 2.0
+        },
+        "crowding": {
+          "enabled": true,
+          "min_count": 5,
+          "min_duration_s": 5.0,
+          "whole_frame": false
+        },
+        "near_miss": {
+          "enabled": true,
+          "vulnerable_classes": [
+            0
+          ],
+          "other_classes": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7
+          ],
+          "near_distance_bh": 0.6,
+          "min_rel_speed_bh_s": 0.8,
+          "min_closing_speed_bh_s": 0.3,
+          "ttc_s": 1.0,
+          "contact_bh": 0.15,
+          "max_scale_diff": 0.35,
+          "min_duration_s": 0.0
+        },
+        "approaching": {
+          "enabled": false,
+          "classes": [
+            0,
+            1,
+            2,
+            3,
+            16
+          ],
+          "window_s": 0.5,
+          "min_growth_per_s": 0.05,
+          "ttc_s": 2.5,
+          "center_band": 0.35,
+          "min_size_frac": 0.25,
+          "min_duration_s": 0.3,
+          "uniform_growth_ratio": 2.0,
+          "cooldown_s": 3.0
+        }
+      },
+      "events": {
+        "merge_gap_s": 1.5,
+        "near_miss_ratio": 0.7,
+        "confidence_weights": {
+          "margin": 0.4,
+          "duration": 0.3,
+          "detection": 0.3
+        }
+      },
+      "pose": {
+        "max_frames_per_event": 12,
+        "min_keypoint_conf": 0.4,
+        "min_pose_frames": 4,
+        "run_leg_spread_bh": 0.3,
+        "run_lean_deg": 6.0,
+        "upright_max_lean_deg": 25.0
+      },
+      "output": {
+        "annotated_video": true,
+        "trail_s": 3.0,
+        "heatmap": true,
+        "timeline": true
+      },
+      "chains": {
+        "enabled": true,
+        "max_gap_s": 15.0
+      },
+      "highlights": {
+        "enabled": true,
+        "pad_s": 1.5,
+        "max_segment_s": 8.0,
+        "title_s": 2.0
+      },
+      "privacy": {
+        "enabled": false,
+        "mode": "head",
+        "head_fraction": 0.28,
+        "style": "pixelate"
+      },
+      "scenario": {
+        "name": "workplace",
+        "title": "Industrial / workplace safety",
+        "entity_word": "Person",
+        "unit_word": "body-heights",
+        "behavior_names": {
+          "near_miss": "Near miss",
+          "zone_intrusion": "Entered machine danger zone",
+          "running": "Running on the shop floor",
+          "loitering": "Loitering",
+          "fall": "Fall / person down"
+        }
+      }
+    },
+    "elapsed_s": 9.6,
+    "n_people": 4
+  },
+  "events": [
+    {
+      "event_id": 1,
+      "entity_id": 1,
+      "behavior": "near_miss",
+      "start_s": 6.08,
+      "end_s": 6.48,
+      "start": "00:06",
+      "end": "00:06",
+      "duration_s": 0.4,
+      "confidence": 0.96,
+      "confidence_parts": {
+        "margin": 1.0,
+        "duration": 1.0,
+        "detection": 0.86
+      },
+      "evidence": "Person #1 and Bicycle #2 came within 0.07 body-heights of each other at 00:06.3, closing at 2.9 body-heights/s (possible contact). They approached for 0.3 s, then separated. Rule: closer than 0.6 body-heights while moving >= 0.8 body-heights/s relative.",
+      "metrics": {
+        "min_distance_bh": 0.074,
+        "peak_time_s": 6.32,
+        "max_closing_speed_bh_s": 2.948,
+        "min_ttc_s": 0.02,
+        "rel_speed_at_closest_bh_s": 3.26,
+        "other_id": 2,
+        "other_class": 1,
+        "approach_s": 0.32,
+        "contact": true,
+        "duration_s": 0.4,
+        "mean_det_conf": 0.858,
+        "min_duration_s": 0.0
+      },
+      "zone": null,
+      "baseline": null,
+      "snapshot_time_s": 6.32,
+      "snapshot": "snapshots/e1.jpg",
+      "speed_plot": "plots/e1.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        1,
+        2
+      ],
+      "other_entity": 2,
+      "entity_name": "Person #1",
+      "behavior_name": "Near miss"
+    },
+    {
+      "event_id": 2,
+      "entity_id": 2,
+      "behavior": "running",
+      "start_s": 6.16,
+      "end_s": 8.08,
+      "start": "00:06",
+      "end": "00:08",
+      "duration_s": 1.92,
+      "confidence": 0.95,
+      "confidence_parts": {
+        "margin": 1.0,
+        "duration": 0.96,
+        "detection": 0.86
+      },
+      "evidence": "Moved at 3.0 body-heights/s (peak 3.3) for 1.9 s. Rule: >= 1.8 bh/s for >= 1 s; walking is about 0.6-1.0.",
+      "metrics": {
+        "duration_s": 1.92,
+        "peak_speed_bh_s": 3.279,
+        "mean_speed_bh_s": 2.979,
+        "start_threshold_bh_s": 1.8,
+        "end_threshold_bh_s": 1.4,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.859,
+        "peak_time_s": 7.76
+      },
+      "zone": null,
+      "baseline": null,
+      "snapshot_time_s": 7.76,
+      "snapshot": "snapshots/e2.jpg",
+      "speed_plot": "plots/e2.png",
+      "verified": null,
+      "pose": null,
+      "severity": "medium",
+      "entities": [
+        2
+      ],
+      "other_entity": null,
+      "entity_name": "Bicycle #2",
+      "behavior_name": "Running on the shop floor"
+    },
+    {
+      "event_id": 3,
+      "entity_id": 3,
+      "behavior": "fall",
+      "start_s": 18.32,
+      "end_s": 24.0,
+      "start": "00:18",
+      "end": "00:24",
+      "duration_s": 5.68,
+      "confidence": 0.96,
+      "confidence_parts": {
+        "margin": 1.0,
+        "duration": 1.0,
+        "detection": 0.87
+      },
+      "evidence": "Box went from upright (w/h 0.3) to lying (w/h 3.1) within 2.0 s and stayed down 6 s.",
+      "metrics": {
+        "duration_s": 5.68,
+        "max_aspect": 3.118,
+        "upright_aspect_before": 0.323,
+        "fell": true,
+        "transition_s": 2.0,
+        "min_down_s": 2.0,
+        "mean_det_conf": 0.87,
+        "peak_time_s": 18.82
+      },
+      "zone": null,
+      "baseline": null,
+      "snapshot_time_s": 18.82,
+      "snapshot": "snapshots/e3.jpg",
+      "speed_plot": "plots/e3.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        3
+      ],
+      "other_entity": null,
+      "entity_name": "Person #3",
+      "behavior_name": "Fall / person down"
+    }
+  ],
+  "incidents": [],
+  "near_misses": [],
+  "unusual_tracks": [],
+  "baseline": {
+    "enabled": true,
+    "active": false,
+    "n_tracks": 4,
+    "median_speed_bh_s": 0.373,
+    "median_dwell_s": 3.2
+  },
+  "highlight_reel": "highlights.mp4",
+  "tracks": [
+    {
+      "id": 1,
+      "first_seen": 0.0,
+      "last_seen": 8.32,
+      "duration_s": 8.32,
+      "median_speed_bh_s": 0.798,
+      "p90_speed_bh_s": 0.81,
+      "max_dwell_s": 1.28
+    },
+    {
+      "id": 2,
+      "first_seen": 5.76,
+      "last_seen": 8.08,
+      "duration_s": 2.32,
+      "median_speed_bh_s": 3.209,
+      "p90_speed_bh_s": 3.253,
+      "max_dwell_s": 0.4
+    },
+    {
+      "id": 3,
+      "first_seen": 13.04,
+      "last_seen": 26.96,
+      "duration_s": 13.92,
+      "median_speed_bh_s": 0.373,
+      "p90_speed_bh_s": 0.48,
+      "max_dwell_s": 8.56
+    },
+    {
+      "id": 4,
+      "first_seen": 2.0,
+      "last_seen": 28.0,
+      "duration_s": 26.0,
+      "median_speed_bh_s": 0.316,
+      "p90_speed_bh_s": 0.332,
+      "max_dwell_s": 3.2
+    }
+  ]
+}

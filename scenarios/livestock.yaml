@@ -1,0 +1,38 @@
+# Scenario preset: livestock monitoring (a pen, paddock or barn seen by a fixed camera).
+#
+# Animals are tracked with the stock COCO classes: 16 dog, 17 horse, 18 sheep, 19 cow.
+# Rules: an animal that has not moved for a minute, an animal that left the pen (draw
+# the pen with zone_picker.py), a sudden burst of speed (stampede / distress) and animals
+# bunching together.
+#
+# Use it with:  python run.py --video samples/barn.mp4 --zones pen.json --scenario livestock
+#
+# Speeds are in BODY-LENGTHS per second (the longest side of the box), not body-heights.
+
+scenario:
+  name: livestock
+  title: "Livestock monitoring"
+  entity_word: Animal
+  unit_word: body-lengths
+  behavior_names:
+    loitering: "Not moving"
+    zone_intrusion: "Left the pen"
+    running: "Stampede / distress"
+    crowding: "Bunching"
+
+model:
+  classes: [17, 18, 19, 16]           # horse, sheep, cow, dog
+
+behaviors:
+  loitering:
+    min_duration_s: 60.0              # an animal that has not moved for a minute may be ill or stuck
+  running:
+    start_speed_bh_s: 2.5             # animals move slower than people, so this is a real burst
+    end_speed_bh_s: 2.0
+  fall:
+    enabled: false                    # animals are wider than tall all the time: the person-down rule would always fire
+  crowding:
+    min_count: 8                      # eight or more animals inside the zone = bunching
+    # whole_frame: true               # uncomment to count the whole frame when no zone is drawn
+  near_miss:
+    enabled: false

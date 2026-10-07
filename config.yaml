@@ -1,0 +1,194 @@
+# PS07 configuration. Every threshold lives here; nothing is hardcoded in the code.
+# Distances use body-heights (bh) = the person's box height, so the same numbers work
+# for people near and far from the camera, and on any camera / resolution.
+# Times are in seconds, converted from frame numbers with each video's own FPS.
+
+video:
+  resize_width: 640        # frames are resized to this width before detection
+  frame_stride: 2          # process every Nth frame (1 = every frame, 2 = half the work)
+  max_seconds: 0           # 0 = whole video; >0 = only the first N seconds
+
+model:
+  weights: yolo11n.pt      # pretrained COCO model, downloads automatically on first run
+  device: auto             # auto | cpu | 0 (first GPU)
+  conf: 0.30               # minimum detection confidence
+  iou: 0.50
+  imgsz: 640
+  tracker: bytetrack_custom.yaml
+  pose_weights: yolo11n-pose.pt
+  classes: [0]             # COCO class ids to track (0 = person); presets change this
+
+features:
+  smoothing_s: 0.5         # average foot point / box height over this window (removes box jitter)
+  speed_window_s: 0.5      # speed = smoothed displacement over this window / elapsed time
+  max_gap_s: 1.0           # a track missing longer than this is split (no speed across the gap)
+  min_track_s: 1.0         # ignore tracks shorter than this (ghost detections)
+  min_box_h_px: 20         # ignore tiny boxes (too far away to measure reliably)
+  scale: max_side          # body size = max(box height, box width); equals height for upright people
+
+behaviors:
+  loitering:
+    enabled: true
+    radius_bh: 0.5         # stays within this many body-heights of one spot...
+    min_duration_s: 10.0   # ...for at least this long
+    bridge_gap_s: 3.0      # a short detection dropout (e.g. hidden by a pillar) does not reset the clock
+  zone_intrusion:
+    enabled: true
+    min_duration_s: 1.0    # foot point inside a zone polygon for at least this long
+  running:
+    enabled: true
+    start_speed_bh_s: 1.8  # running starts above this speed (walking is about 0.6-1.0)
+    end_speed_bh_s: 1.4    # ...and only ends below this (hysteresis stops flicker)
+    min_duration_s: 1.0
+  baseline:
+    enabled: true
+    min_tracks: 4          # need at least this many people in the video to judge "normal"
+    z_threshold: 3.0       # robust z-score (median / MAD) above which a track is unusual
+  fall:                    # person down: box becomes wider than tall and stays that way
+    enabled: true
+    down_min_aspect: 1.2   # width / height at or above this = lying
+    upright_max_aspect: 0.8  # width / height at or below this = standing
+    transition_s: 2.0      # "fell" if they were standing within this many seconds before
+    min_down_s: 2.0        # must stay down at least this long
+  crowding:                # too many people inside a zone
+    enabled: true
+    min_count: 5
+    min_duration_s: 5.0
+    whole_frame: false     # true = count the whole frame when no zone is drawn
+  near_miss:               # two objects came dangerously close while moving relative to each other
+    enabled: true
+    vulnerable_classes: [0]          # who can get hurt (0 = person)
+    other_classes: [0, 1, 2, 3, 5, 7]  # what they can nearly hit: person, bicycle, car, motorbike, bus, truck
+    near_distance_bh: 0.6            # closer than this (in the person's body-heights)...
+    min_rel_speed_bh_s: 0.8          # ...while moving at least this fast relative to each other
+    min_closing_speed_bh_s: 0.3      # below this they are not really approaching (no time-to-collision)
+    ttc_s: 1.0                       # time-to-collision under this also counts (if within 1.5x the distance)
+    contact_bh: 0.15                 # closer than this = possible contact
+    max_scale_diff: 0.35             # two people with very different sizes are at different depths: ignore
+    min_duration_s: 0.0              # a near miss can be a single moment
+  approaching:             # MOVING (wearable) camera only: something growing fast in view is coming at you
+    enabled: false                   # on in the 'navigation' preset; off for fixed CCTV cameras
+    classes: [0, 1, 2, 3, 16]        # person, bicycle, car, motorbike, dog
+    window_s: 0.5                    # growth of the box size is measured over this window
+    min_growth_per_s: 0.05           # slower growth than this = not really approaching
+    ttc_s: 2.5                       # alert when time to contact (1 / growth rate) is at most this
+    center_band: 0.35                # in the walking path: within 35% of the image centre (now or at contact)
+    min_size_frac: 0.25              # already close: object at least 25% of the frame height
+    min_duration_s: 0.3              # must hold this long (one jittery frame is not an alert)
+    uniform_growth_ratio: 2.0        # width and height must grow at similar rates (arms up / bending = no)
+    cooldown_s: 3.0                  # one alert per object within this many seconds (no alert spam)
+  aquatic_distress:        # produced by the pool module (pool.py); on in the 'pool' preset
+    enabled: false
+  submersion:              # produced by the pool module: a swimmer in distress whose head went under
+    enabled: false
+
+events:
+  merge_gap_s: 1.5         # two pieces of the same behaviour closer than this become one event
+  near_miss_ratio: 0.7     # report "almost flagged" cases that reached 70% of a threshold
+  confidence_weights:      # confidence = weighted sum of three scores in [0, 1]
+    margin: 0.4            # how far past the threshold
+    duration: 0.3          # how long it lasted compared with the minimum
+    detection: 0.3         # mean YOLO detection confidence during the event
+
+pose:                      # optional second opinion, enabled with --pose
+  max_frames_per_event: 12
+  min_keypoint_conf: 0.4
+  min_pose_frames: 4       # fewer usable frames than this -> "uncertain"
+  run_leg_spread_bh: 0.30  # running: max ankle separation (body-heights) of a running stride
+  run_lean_deg: 6.0        # running: typical forward torso lean (degrees from vertical)
+  upright_max_lean_deg: 25.0  # loitering: person counts as upright below this lean
+
+output:
+  annotated_video: true
+  trail_s: 3.0             # trail length drawn behind each person in the video
+  heatmap: true
+  timeline: true
+
+chains:                    # incident chains: one person's events linked over time
+  enabled: true
+  max_gap_s: 15.0          # next event must start within this many seconds of the previous one
+
+highlights:                # highlights.mp4: only the incidents, captioned
+  enabled: true
+  pad_s: 1.5               # seconds of context before and after each incident
+  max_segment_s: 8.0       # longer incidents are fast-forwarded to fit
+  title_s: 2.0             # opening title card length
+
+privacy:                   # blur faces in every output (detection still uses the original frames)
+  enabled: false           # or pass --privacy
+  mode: head               # head | body
+  head_fraction: 0.28      # top part of each person box treated as the head
+  style: pixelate          # pixelate | blur
+
+pool:                      # Aquatic distress (swimming pool). Used by scenarios/pool.yaml; see POOL.md
+  enabled: false
+  state_classes: {}        # custom swimmer detector: class id -> state, e.g. {0: swimmer_horizontal, 1: swimmer_vertical,
+                           #   2: head_only, 3: underwater, 4: out_of_water}. Empty = stock YOLO, state from box shape
+  sample_s: 0.5            # one behaviour sample per swimmer every 0.5 s (stage 2)
+  window_s: 2.0            # each sample looks at the last 2 s
+  horizontal_aspect: 1.3   # box width / height >= this = body horizontal (swimming); stock-detector fallback
+  head_area_frac: 0.45     # box smaller than 45% of the swimmer's usual size = only the head is visible
+  movement_low_bh_s: 0.25  # path speed below this = movement "low"
+  movement_high_bh_s: 0.8  # ... above this = "high"
+  displacement_low_bh_s: 0.15   # net forward progress below this = "no progress"
+  pose: true               # use the pose model for arm and head signals (yolo11n-pose.pt)
+  pose_hz: 6.0             # pose samples per second per swimmer
+  kp_conf: 0.35            # keypoints below this confidence are ignored
+  arm_min_hz: 0.6          # "repeated" arm motion: wrists going up and down at least this often...
+  arm_min_amp: 0.08        # ...with at least this amplitude (body-heights)
+  arm_calm_amp: 0.04       # below this amplitude the arms are "calm"
+  head_unstable: 0.06      # head bobbing more than this (body-heights, std) = "unstable"
+  shrink_ratio: 0.55       # box area falling below 55% inside one window = sinking / going under
+  edge_zone_words: [edge, wall]    # zones whose name contains one of these = next to the wall (resting is normal)
+  water_zone_words: [water, pool]  # zones whose name contains one of these = the water area (others = locations)
+  default_location: Pool   # location name when the swimmer is in no named zone
+  weights:                 # stage 3 risk = sum of the signals present (max 1.0)
+    vertical: 0.25
+    low_displacement: 0.25
+    repeated_arms: 0.25
+    unstable_head: 0.15
+    transition: 0.10       # was swimming normally shortly before
+  watch_risk: 0.3          # NORMAL -> WATCH
+  warning_risk: 0.55       # -> WARNING
+  alert_risk: 0.7          # -> DISTRESS once held for hold_s
+  release_risk: 0.5        # a distress run ends when risk falls below this (hysteresis)
+  hold_s: 5.0              # distress signals must last this long before the alert
+  lookback_s: 30.0         # "transition": normal swimming seen within this many seconds before the warning
+  resting_factor: 0.3      # at the wall with calm arms: risk x 0.3 (resting, not distress)
+  treading_cap: 0.45       # upright, calm arms, steady head (treading water): risk capped here
+  submersion_lost_s: 1.5   # in warning/distress and not seen for this long = possible submersion
+  submersion_head_s: 1.0   # ...or head "submerged" for this long
+  # --- from the team's behaviour_analysis.py prototype (merged) ---
+  vertical_above_deg: 60.0     # torso angle (when hips are visible) at/above this = vertical
+  horizontal_below_deg: 30.0   # ... at/below this = horizontal; in between = diagonal
+  posture_hold_s: 1.0          # a new posture must last this long before it is reported (no flicker)
+  arm_peak_prominence: 0.08    # a wrist peak must rise this much (body-heights) to count
+  arm_none_hz: 0.3             # fewer wrist peaks per second than this = calm arms
+  head_submerged_below: 0.2    # head seen in less than 20% of pose frames (and sinking) = submerged
+  head_up_min: 0.08            # upright swimmer whose head is less than this above the shoulders = unstable
+  ema_alpha: 0.7              # keypoint smoothing (1 = none, lower = smoother)
+  kp_max_gap: 5               # a missing keypoint is held this many pose samples, then dropped
+  jump_factor: 0.8            # box jumping more than this x its size within 1 s = ID switch suspected
+  min_box_px: 40              # swimmers smaller than this (processing px) get lower confidence
+
+announce:                  # spoken alert on the speaker when distress is found (--announce, or the UI)
+  enabled: false
+  min_risk: 0.7            # only announce alerts at or above this risk
+  behaviors: [aquatic_distress, submersion]
+  repeat: 2                # say it this many times
+  voice: ""                # Windows voice name ("Microsoft Zira Desktop"); empty = system default
+  rate: 0                  # speech speed -10 .. 10
+  message: "Attention lifeguard. {who} may be in distress at the {location}. Risk {risk} percent."
+  submersion_message: "Urgent. {who} may have gone under at the {location}. Check now."
+
+time_of_day:               # optional: rules that only matter at certain hours (e.g. night)
+  start_time: ""           # clock time of the video's first frame, HH:MM[:SS]; or pass --start-time
+  # Any rule can get  active_hours: "22:00-06:00"  (several windows: "08:00-12:00, 14:00-18:00").
+  # Events outside its hours are ignored (listed in events.json). Without a start time, rules run all day.
+
+scenario:                  # wording only; presets in scenarios/ override this (--scenario NAME)
+  name: campus
+  title: "Campus corridor (restricted zone)"
+  entity_word: Person      # "Person #3"
+  unit_word: body-heights  # unit for speeds and distances
+  behavior_names: {}       # e.g. {running: "Speeding"}; empty = default names

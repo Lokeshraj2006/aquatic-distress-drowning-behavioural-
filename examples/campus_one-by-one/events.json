@@ -1,0 +1,897 @@
+{
+  "video": "samples\\one-by-one-person-detection.mp4",
+  "meta": {
+    "video": "samples\\one-by-one-person-detection.mp4",
+    "duration_s": 139.4,
+    "fps": 10.0,
+    "orig_size": [
+      768,
+      432
+    ],
+    "proc_size": [
+      640,
+      360
+    ],
+    "frames_processed": 697,
+    "n_tracks": 6,
+    "device": "cpu",
+    "model": "yolo11n.pt",
+    "runtime_s": 20.9,
+    "generated": "2026-10-07T04:01:43",
+    "stride": 2,
+    "zones": [
+      "table_area"
+    ],
+    "settings": {
+      "scenario": "campus (Campus corridor (restricted zone))",
+      "tracked_classes": "person",
+      "behaviours_enabled": "loitering, zone_intrusion, running, fall, crowding, near_miss",
+      "resize_width_px": 640,
+      "frame_stride": 2,
+      "detector_conf": 0.3,
+      "loitering_radius_bh": 0.5,
+      "loitering_min_duration_s": 10.0,
+      "zone_min_duration_s": 1.0,
+      "running_start_speed_bh_s": 1.8,
+      "running_end_speed_bh_s": 1.4,
+      "running_min_duration_s": 1.0,
+      "fall_down_min_aspect": 1.2,
+      "fall_min_down_s": 2.0,
+      "crowding_min_count": 5,
+      "crowding_min_duration_s": 5.0,
+      "near_miss_distance_bh": 0.6,
+      "near_miss_min_rel_speed_bh_s": 0.8,
+      "near_miss_ttc_s": 1.0,
+      "size_unit": "body-heights",
+      "merge_gap_s": 1.5,
+      "near_miss_ratio": 0.7,
+      "baseline_min_tracks": 4,
+      "baseline_z_threshold": 3.0
+    },
+    "scenario": {
+      "name": "campus",
+      "title": "Campus corridor (restricted zone)"
+    },
+    "privacy": false,
+    "processing_fps": null,
+    "pose": false,
+    "config": {
+      "video": {
+        "resize_width": 640,
+        "frame_stride": 2,
+        "max_seconds": 0
+      },
+      "model": {
+        "weights": "yolo11n.pt",
+        "device": "auto",
+        "conf": 0.3,
+        "iou": 0.5,
+        "imgsz": 640,
+        "tracker": "bytetrack_custom.yaml",
+        "pose_weights": "yolo11n-pose.pt",
+        "classes": [
+          0
+        ]
+      },
+      "features": {
+        "smoothing_s": 0.5,
+        "speed_window_s": 0.5,
+        "max_gap_s": 1.0,
+        "min_track_s": 1.0,
+        "min_box_h_px": 20,
+        "scale": "max_side"
+      },
+      "behaviors": {
+        "loitering": {
+          "enabled": true,
+          "radius_bh": 0.5,
+          "min_duration_s": 10.0,
+          "bridge_gap_s": 3.0
+        },
+        "zone_intrusion": {
+          "enabled": true,
+          "min_duration_s": 1.0
+        },
+        "running": {
+          "enabled": true,
+          "start_speed_bh_s": 1.8,
+          "end_speed_bh_s": 1.4,
+          "min_duration_s": 1.0
+        },
+        "baseline": {
+          "enabled": true,
+          "min_tracks": 4,
+          "z_threshold": 3.0
+        },
+        "fall": {
+          "enabled": true,
+          "down_min_aspect": 1.2,
+          "upright_max_aspect": 0.8,
+          "transition_s": 2.0,
+          "min_down_s": 2.0
+        },
+        "crowding": {
+          "enabled": true,
+          "min_count": 5,
+          "min_duration_s": 5.0,
+          "whole_frame": false
+        },
+        "near_miss": {
+          "enabled": true,
+          "vulnerable_classes": [
+            0
+          ],
+          "other_classes": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            7
+          ],
+          "near_distance_bh": 0.6,
+          "min_rel_speed_bh_s": 0.8,
+          "min_closing_speed_bh_s": 0.3,
+          "ttc_s": 1.0,
+          "contact_bh": 0.15,
+          "max_scale_diff": 0.35,
+          "min_duration_s": 0.0
+        },
+        "approaching": {
+          "enabled": false,
+          "classes": [
+            0,
+            1,
+            2,
+            3,
+            16
+          ],
+          "window_s": 0.5,
+          "min_growth_per_s": 0.05,
+          "ttc_s": 2.5,
+          "center_band": 0.35,
+          "min_size_frac": 0.25,
+          "min_duration_s": 0.3,
+          "uniform_growth_ratio": 2.0,
+          "cooldown_s": 3.0
+        }
+      },
+      "events": {
+        "merge_gap_s": 1.5,
+        "near_miss_ratio": 0.7,
+        "confidence_weights": {
+          "margin": 0.4,
+          "duration": 0.3,
+          "detection": 0.3
+        }
+      },
+      "pose": {
+        "max_frames_per_event": 12,
+        "min_keypoint_conf": 0.4,
+        "min_pose_frames": 4,
+        "run_leg_spread_bh": 0.3,
+        "run_lean_deg": 6.0,
+        "upright_max_lean_deg": 25.0
+      },
+      "output": {
+        "annotated_video": true,
+        "trail_s": 3.0,
+        "heatmap": true,
+        "timeline": true
+      },
+      "chains": {
+        "enabled": true,
+        "max_gap_s": 15.0
+      },
+      "highlights": {
+        "enabled": true,
+        "pad_s": 1.5,
+        "max_segment_s": 8.0,
+        "title_s": 2.0
+      },
+      "privacy": {
+        "enabled": false,
+        "mode": "head",
+        "head_fraction": 0.28,
+        "style": "pixelate"
+      },
+      "scenario": {
+        "name": "campus",
+        "title": "Campus corridor (restricted zone)",
+        "entity_word": "Person",
+        "unit_word": "body-heights",
+        "behavior_names": {}
+      }
+    },
+    "elapsed_s": 20.9,
+    "n_people": 6
+  },
+  "events": [
+    {
+      "event_id": 1,
+      "entity_id": 1,
+      "behavior": "loitering",
+      "start_s": 6.6,
+      "end_s": 19.0,
+      "start": "00:06",
+      "end": "00:19",
+      "duration_s": 12.4,
+      "confidence": 0.78,
+      "confidence_parts": {
+        "margin": 0.81,
+        "duration": 0.62,
+        "detection": 0.89
+      },
+      "evidence": "Stayed within 0.34 body-heights of one spot for 12 s. Rule: within 0.5 bh for >= 10 s.",
+      "metrics": {
+        "duration_s": 12.4,
+        "max_radius_bh": 0.34,
+        "p90_radius_bh": 0.096,
+        "radius_threshold_bh": 0.5,
+        "min_duration_s": 10.0,
+        "mean_speed_bh_s": 0.052,
+        "mean_det_conf": 0.892,
+        "peak_time_s": 12.8
+      },
+      "zone": null,
+      "baseline": {
+        "anomaly_score": 0.0,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 12.8,
+      "snapshot": "snapshots/e1.jpg",
+      "speed_plot": "plots/e1.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        1
+      ],
+      "other_entity": null,
+      "entity_name": "Person #1",
+      "behavior_name": "Loitering"
+    },
+    {
+      "event_id": 2,
+      "entity_id": 1,
+      "behavior": "zone_intrusion",
+      "start_s": 6.6,
+      "end_s": 18.8,
+      "start": "00:06",
+      "end": "00:18",
+      "duration_s": 12.2,
+      "confidence": 0.66,
+      "confidence_parts": {
+        "margin": 0.22,
+        "duration": 1.0,
+        "detection": 0.89
+      },
+      "evidence": "Feet inside zone 'table_area' for 12.2 s, up to 0.11 body-heights deep. Rule: >= 1 s.",
+      "metrics": {
+        "duration_s": 12.2,
+        "zone": "table_area",
+        "max_depth_bh": 0.112,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.891,
+        "peak_time_s": 8.2
+      },
+      "zone": "table_area",
+      "baseline": {
+        "anomaly_score": 0.0,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 8.2,
+      "snapshot": "snapshots/e2.jpg",
+      "speed_plot": "plots/e2.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        1
+      ],
+      "other_entity": null,
+      "entity_name": "Person #1",
+      "behavior_name": "Zone intrusion"
+    },
+    {
+      "event_id": 3,
+      "entity_id": 5,
+      "behavior": "loitering",
+      "start_s": 23.4,
+      "end_s": 44.4,
+      "start": "00:23",
+      "end": "00:44",
+      "duration_s": 21.0,
+      "confidence": 0.94,
+      "confidence_parts": {
+        "margin": 0.92,
+        "duration": 1.0,
+        "detection": 0.92
+      },
+      "evidence": "Stayed within 0.51 body-heights of one spot for 21 s. Rule: within 0.5 bh for >= 10 s.",
+      "metrics": {
+        "duration_s": 21.0,
+        "max_radius_bh": 0.508,
+        "p90_radius_bh": 0.039,
+        "radius_threshold_bh": 0.5,
+        "min_duration_s": 10.0,
+        "mean_speed_bh_s": 0.039,
+        "mean_det_conf": 0.919,
+        "peak_time_s": 33.9
+      },
+      "zone": null,
+      "baseline": {
+        "anomaly_score": 0.81,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 33.9,
+      "snapshot": "snapshots/e3.jpg",
+      "speed_plot": "plots/e3.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        5
+      ],
+      "other_entity": null,
+      "entity_name": "Person #5",
+      "behavior_name": "Loitering"
+    },
+    {
+      "event_id": 4,
+      "entity_id": 5,
+      "behavior": "zone_intrusion",
+      "start_s": 23.4,
+      "end_s": 43.8,
+      "start": "00:23",
+      "end": "00:43",
+      "duration_s": 20.4,
+      "confidence": 0.69,
+      "confidence_parts": {
+        "margin": 0.27,
+        "duration": 1.0,
+        "detection": 0.92
+      },
+      "evidence": "Feet inside zone 'table_area' for 20.4 s, up to 0.14 body-heights deep. Rule: >= 1 s.",
+      "metrics": {
+        "duration_s": 20.4,
+        "zone": "table_area",
+        "max_depth_bh": 0.137,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.919,
+        "peak_time_s": 25.0
+      },
+      "zone": "table_area",
+      "baseline": {
+        "anomaly_score": 0.81,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 25.0,
+      "snapshot": "snapshots/e4.jpg",
+      "speed_plot": "plots/e4.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        5
+      ],
+      "other_entity": null,
+      "entity_name": "Person #5",
+      "behavior_name": "Zone intrusion"
+    },
+    {
+      "event_id": 5,
+      "entity_id": 7,
+      "behavior": "loitering",
+      "start_s": 50.8,
+      "end_s": 69.6,
+      "start": "00:50",
+      "end": "01:09",
+      "duration_s": 18.8,
+      "confidence": 0.87,
+      "confidence_parts": {
+        "margin": 0.79,
+        "duration": 0.94,
+        "detection": 0.89
+      },
+      "evidence": "Stayed within 0.52 body-heights of one spot for 19 s. Rule: within 0.5 bh for >= 10 s.",
+      "metrics": {
+        "duration_s": 18.8,
+        "max_radius_bh": 0.519,
+        "p90_radius_bh": 0.106,
+        "radius_threshold_bh": 0.5,
+        "min_duration_s": 10.0,
+        "mean_speed_bh_s": 0.066,
+        "mean_det_conf": 0.893,
+        "peak_time_s": 60.2
+      },
+      "zone": null,
+      "baseline": {
+        "anomaly_score": 1.33,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 60.2,
+      "snapshot": "snapshots/e5.jpg",
+      "speed_plot": "plots/e5.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        7
+      ],
+      "other_entity": null,
+      "entity_name": "Person #7",
+      "behavior_name": "Loitering"
+    },
+    {
+      "event_id": 6,
+      "entity_id": 7,
+      "behavior": "zone_intrusion",
+      "start_s": 50.8,
+      "end_s": 68.8,
+      "start": "00:50",
+      "end": "01:08",
+      "duration_s": 18.0,
+      "confidence": 0.67,
+      "confidence_parts": {
+        "margin": 0.26,
+        "duration": 1.0,
+        "detection": 0.89
+      },
+      "evidence": "Feet inside zone 'table_area' for 18.0 s, up to 0.13 body-heights deep. Rule: >= 1 s.",
+      "metrics": {
+        "duration_s": 18.0,
+        "zone": "table_area",
+        "max_depth_bh": 0.132,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.893,
+        "peak_time_s": 53.6
+      },
+      "zone": "table_area",
+      "baseline": {
+        "anomaly_score": 1.33,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 53.6,
+      "snapshot": "snapshots/e6.jpg",
+      "speed_plot": "plots/e6.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        7
+      ],
+      "other_entity": null,
+      "entity_name": "Person #7",
+      "behavior_name": "Zone intrusion"
+    },
+    {
+      "event_id": 7,
+      "entity_id": 10,
+      "behavior": "loitering",
+      "start_s": 75.0,
+      "end_s": 85.8,
+      "start": "01:15",
+      "end": "01:25",
+      "duration_s": 10.8,
+      "confidence": 0.64,
+      "confidence_parts": {
+        "margin": 0.52,
+        "duration": 0.54,
+        "detection": 0.92
+      },
+      "evidence": "Stayed within 0.45 body-heights of one spot for 11 s. Rule: within 0.5 bh for >= 10 s.",
+      "metrics": {
+        "duration_s": 10.8,
+        "max_radius_bh": 0.451,
+        "p90_radius_bh": 0.241,
+        "radius_threshold_bh": 0.5,
+        "min_duration_s": 10.0,
+        "mean_speed_bh_s": 0.08,
+        "mean_det_conf": 0.917,
+        "peak_time_s": 80.4
+      },
+      "zone": null,
+      "baseline": {
+        "anomaly_score": 0.29,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 80.4,
+      "snapshot": "snapshots/e7.jpg",
+      "speed_plot": "plots/e7.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        10
+      ],
+      "other_entity": null,
+      "entity_name": "Person #10",
+      "behavior_name": "Loitering"
+    },
+    {
+      "event_id": 8,
+      "entity_id": 10,
+      "behavior": "zone_intrusion",
+      "start_s": 75.6,
+      "end_s": 85.6,
+      "start": "01:15",
+      "end": "01:25",
+      "duration_s": 10.0,
+      "confidence": 0.7,
+      "confidence_parts": {
+        "margin": 0.31,
+        "duration": 1.0,
+        "detection": 0.92
+      },
+      "evidence": "Feet inside zone 'table_area' for 10.0 s, up to 0.15 body-heights deep. Rule: >= 1 s.",
+      "metrics": {
+        "duration_s": 10.0,
+        "zone": "table_area",
+        "max_depth_bh": 0.155,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.916,
+        "peak_time_s": 77.4
+      },
+      "zone": "table_area",
+      "baseline": {
+        "anomaly_score": 0.29,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 77.4,
+      "snapshot": "snapshots/e8.jpg",
+      "speed_plot": "plots/e8.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        10
+      ],
+      "other_entity": null,
+      "entity_name": "Person #10",
+      "behavior_name": "Zone intrusion"
+    },
+    {
+      "event_id": 9,
+      "entity_id": 11,
+      "behavior": "loitering",
+      "start_s": 93.0,
+      "end_s": 119.0,
+      "start": "01:33",
+      "end": "01:59",
+      "duration_s": 26.0,
+      "confidence": 0.96,
+      "confidence_parts": {
+        "margin": 0.97,
+        "duration": 1.0,
+        "detection": 0.93
+      },
+      "evidence": "Stayed within 0.46 body-heights of one spot for 26 s. Rule: within 0.5 bh for >= 10 s.",
+      "metrics": {
+        "duration_s": 26.0,
+        "max_radius_bh": 0.46,
+        "p90_radius_bh": 0.017,
+        "radius_threshold_bh": 0.5,
+        "min_duration_s": 10.0,
+        "mean_speed_bh_s": 0.024,
+        "mean_det_conf": 0.928,
+        "peak_time_s": 106.0
+      },
+      "zone": null,
+      "baseline": {
+        "anomaly_score": 1.61,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 106.0,
+      "snapshot": "snapshots/e9.jpg",
+      "speed_plot": "plots/e9.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        11
+      ],
+      "other_entity": null,
+      "entity_name": "Person #11",
+      "behavior_name": "Loitering"
+    },
+    {
+      "event_id": 10,
+      "entity_id": 11,
+      "behavior": "zone_intrusion",
+      "start_s": 93.0,
+      "end_s": 118.6,
+      "start": "01:33",
+      "end": "01:58",
+      "duration_s": 25.6,
+      "confidence": 0.69,
+      "confidence_parts": {
+        "margin": 0.29,
+        "duration": 1.0,
+        "detection": 0.93
+      },
+      "evidence": "Feet inside zone 'table_area' for 25.6 s, up to 0.14 body-heights deep. Rule: >= 1 s.",
+      "metrics": {
+        "duration_s": 25.6,
+        "zone": "table_area",
+        "max_depth_bh": 0.145,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.928,
+        "peak_time_s": 95.2
+      },
+      "zone": "table_area",
+      "baseline": {
+        "anomaly_score": 1.61,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 95.2,
+      "snapshot": "snapshots/e10.jpg",
+      "speed_plot": "plots/e10.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        11
+      ],
+      "other_entity": null,
+      "entity_name": "Person #11",
+      "behavior_name": "Zone intrusion"
+    },
+    {
+      "event_id": 11,
+      "entity_id": 14,
+      "behavior": "loitering",
+      "start_s": 123.8,
+      "end_s": 135.2,
+      "start": "02:03",
+      "end": "02:15",
+      "duration_s": 11.4,
+      "confidence": 0.69,
+      "confidence_parts": {
+        "margin": 0.6,
+        "duration": 0.57,
+        "detection": 0.93
+      },
+      "evidence": "Stayed within 0.49 body-heights of one spot for 11 s. Rule: within 0.5 bh for >= 10 s.",
+      "metrics": {
+        "duration_s": 11.4,
+        "max_radius_bh": 0.49,
+        "p90_radius_bh": 0.198,
+        "radius_threshold_bh": 0.5,
+        "min_duration_s": 10.0,
+        "mean_speed_bh_s": 0.094,
+        "mean_det_conf": 0.925,
+        "peak_time_s": 129.5
+      },
+      "zone": null,
+      "baseline": {
+        "anomaly_score": 0.74,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 129.5,
+      "snapshot": "snapshots/e11.jpg",
+      "speed_plot": "plots/e11.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        14
+      ],
+      "other_entity": null,
+      "entity_name": "Person #14",
+      "behavior_name": "Loitering"
+    },
+    {
+      "event_id": 12,
+      "entity_id": 14,
+      "behavior": "zone_intrusion",
+      "start_s": 124.2,
+      "end_s": 134.8,
+      "start": "02:04",
+      "end": "02:14",
+      "duration_s": 10.6,
+      "confidence": 0.66,
+      "confidence_parts": {
+        "margin": 0.22,
+        "duration": 1.0,
+        "detection": 0.93
+      },
+      "evidence": "Feet inside zone 'table_area' for 10.6 s, up to 0.11 body-heights deep. Rule: >= 1 s.",
+      "metrics": {
+        "duration_s": 10.6,
+        "zone": "table_area",
+        "max_depth_bh": 0.109,
+        "min_duration_s": 1.0,
+        "mean_det_conf": 0.925,
+        "peak_time_s": 134.6
+      },
+      "zone": "table_area",
+      "baseline": {
+        "anomaly_score": 0.74,
+        "note": "Within the normal range for this scene"
+      },
+      "snapshot_time_s": 134.6,
+      "snapshot": "snapshots/e12.jpg",
+      "speed_plot": "plots/e12.png",
+      "verified": null,
+      "pose": null,
+      "severity": "high",
+      "entities": [
+        14
+      ],
+      "other_entity": null,
+      "entity_name": "Person #14",
+      "behavior_name": "Zone intrusion"
+    }
+  ],
+  "incidents": [
+    {
+      "chain_id": 1,
+      "entity_id": 1,
+      "entity_name": "Person #1",
+      "event_ids": [
+        2,
+        1
+      ],
+      "pattern": "zone_intrusion -> loitering",
+      "title": "Lingered inside the restricted zone",
+      "start_s": 6.6,
+      "end_s": 19.0,
+      "start": "00:06",
+      "end": "00:19",
+      "severity": "high",
+      "story": "Person #1 entered zone 'table_area' at 00:06 and stayed 12 s, then loitered 00:06-00:19 (while doing so)."
+    },
+    {
+      "chain_id": 2,
+      "entity_id": 5,
+      "entity_name": "Person #5",
+      "event_ids": [
+        4,
+        3
+      ],
+      "pattern": "zone_intrusion -> loitering",
+      "title": "Lingered inside the restricted zone",
+      "start_s": 23.4,
+      "end_s": 44.4,
+      "start": "00:23",
+      "end": "00:44",
+      "severity": "high",
+      "story": "Person #5 entered zone 'table_area' at 00:23 and stayed 20 s, then loitered 00:23-00:44 (while doing so)."
+    },
+    {
+      "chain_id": 3,
+      "entity_id": 7,
+      "entity_name": "Person #7",
+      "event_ids": [
+        6,
+        5
+      ],
+      "pattern": "zone_intrusion -> loitering",
+      "title": "Lingered inside the restricted zone",
+      "start_s": 50.8,
+      "end_s": 69.6,
+      "start": "00:50",
+      "end": "01:09",
+      "severity": "high",
+      "story": "Person #7 entered zone 'table_area' at 00:50 and stayed 18 s, then loitered 00:50-01:09 (while doing so)."
+    },
+    {
+      "chain_id": 4,
+      "entity_id": 10,
+      "entity_name": "Person #10",
+      "event_ids": [
+        7,
+        8
+      ],
+      "pattern": "loitering -> zone_intrusion",
+      "title": "Lingered inside the restricted zone",
+      "start_s": 75.0,
+      "end_s": 85.8,
+      "start": "01:15",
+      "end": "01:25",
+      "severity": "high",
+      "story": "Person #10 loitered 01:15-01:25, then entered zone 'table_area' at 01:15 (while doing so) and stayed 10 s."
+    },
+    {
+      "chain_id": 5,
+      "entity_id": 11,
+      "entity_name": "Person #11",
+      "event_ids": [
+        10,
+        9
+      ],
+      "pattern": "zone_intrusion -> loitering",
+      "title": "Lingered inside the restricted zone",
+      "start_s": 93.0,
+      "end_s": 119.0,
+      "start": "01:33",
+      "end": "01:59",
+      "severity": "high",
+      "story": "Person #11 entered zone 'table_area' at 01:33 and stayed 26 s, then loitered 01:33-01:59 (while doing so)."
+    },
+    {
+      "chain_id": 6,
+      "entity_id": 14,
+      "entity_name": "Person #14",
+      "event_ids": [
+        11,
+        12
+      ],
+      "pattern": "loitering -> zone_intrusion",
+      "title": "Lingered inside the restricted zone",
+      "start_s": 123.8,
+      "end_s": 135.2,
+      "start": "02:03",
+      "end": "02:15",
+      "severity": "high",
+      "story": "Person #14 loitered 02:03-02:15, then entered zone 'table_area' at 02:04 (while doing so) and stayed 11 s."
+    }
+  ],
+  "near_misses": [],
+  "unusual_tracks": [],
+  "baseline": {
+    "enabled": true,
+    "active": true,
+    "n_tracks": 6,
+    "median_speed_bh_s": 0.008,
+    "median_dwell_s": 15.5
+  },
+  "highlight_reel": "highlights.mp4",
+  "tracks": [
+    {
+      "id": 1,
+      "first_seen": 6.6,
+      "last_seen": 19.4,
+      "duration_s": 12.8,
+      "median_speed_bh_s": 0.005,
+      "p90_speed_bh_s": 0.244,
+      "max_dwell_s": 12.4
+    },
+    {
+      "id": 5,
+      "first_seen": 23.4,
+      "last_seen": 44.4,
+      "duration_s": 21.0,
+      "median_speed_bh_s": 0.003,
+      "p90_speed_bh_s": 0.113,
+      "max_dwell_s": 20.8
+    },
+    {
+      "id": 7,
+      "first_seen": 50.8,
+      "last_seen": 69.6,
+      "duration_s": 18.8,
+      "median_speed_bh_s": 0.019,
+      "p90_speed_bh_s": 0.177,
+      "max_dwell_s": 18.6
+    },
+    {
+      "id": 10,
+      "first_seen": 75.0,
+      "last_seen": 86.6,
+      "duration_s": 11.6,
+      "median_speed_bh_s": 0.01,
+      "p90_speed_bh_s": 0.385,
+      "max_dwell_s": 10.8
+    },
+    {
+      "id": 11,
+      "first_seen": 93.0,
+      "last_seen": 119.6,
+      "duration_s": 26.6,
+      "median_speed_bh_s": 0.001,
+      "p90_speed_bh_s": 0.073,
+      "max_dwell_s": 26.0
+    },
+    {
+      "id": 14,
+      "first_seen": 123.8,
+      "last_seen": 135.8,
+      "duration_s": 12.0,
+      "median_speed_bh_s": 0.014,
+      "p90_speed_bh_s": 0.435,
+      "max_dwell_s": 11.4
+    }
+  ]
+}

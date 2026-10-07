@@ -1,0 +1,37 @@
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# generated results
+outputs/
+eval_report.txt
+eval_report.json
+zone_grid.jpg
+zone_preview.jpg
+config_tuned.yaml
+*.zip
+
+# model weights are downloaded automatically by Ultralytics
+*.pt
+
+# videos stay local (keep the folder itself in git with an empty samples/.gitkeep)
+samples/*.mp4
+samples/*.avi
+samples/*.mov
+!samples/.gitkeep
+# videos uploaded through the web UI
+samples/uploads/
+
+# Streamlit secrets (none are used today)
+.streamlit/secrets.toml
+datasets/
+
+# videos in sub-folders (pexels/, uploads/), training runs, ultralytics run folders
+samples/**/*.mp4
+samples/**/*.mov
+runs/
+training/runs/
+*.part.mp4

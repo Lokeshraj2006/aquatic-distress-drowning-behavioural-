@@ -1,0 +1,46 @@
+# Scenario preset: disaster response (a FIXED camera over a site: collapsed building edge,
+# flood shelter, evacuation route). Status: DESIGN LEVEL. The rules are the tested engine
+# rules, but no real disaster footage was used. Drone and body cameras move, so they need
+# the moving-camera work first (see SCOPE.md).
+#
+# - Person down (fall rule) and "Not moving" (possibly trapped or hurt) are the headline.
+# - A zone over the danger area (rubble, water edge, fire) flags anyone inside it.
+# - A crowd building up at an exit or a narrow passage is flagged (crush risk).
+# - Running is reported as "Fleeing / panic".
+#
+# Use it with:  python run.py --video clip.mp4 --zones danger.json --scenario disaster
+
+scenario:
+  name: disaster
+  title: "Disaster response (people down or trapped)"
+  entity_word: Person
+  unit_word: body-heights
+  behavior_names:
+    fall: "Person down"
+    loitering: "Not moving (possibly trapped)"
+    zone_intrusion: "Inside the danger zone"
+    running: "Fleeing / panic"
+    crowding: "Crowd building up"
+
+behaviors:
+  fall:
+    enabled: true
+    min_down_s: 3.0                   # down for 3 s: not just someone crouching
+  loitering:
+    enabled: true
+    radius_bh: 0.3                    # barely moving...
+    min_duration_s: 30.0              # ...for half a minute
+  zone_intrusion:
+    enabled: true
+    min_duration_s: 1.0
+  running:
+    enabled: true
+    start_speed_bh_s: 2.0             # a little stricter: people hurry in an evacuation
+    end_speed_bh_s: 1.6
+  crowding:
+    enabled: true
+    min_count: 6
+    min_duration_s: 8.0
+    whole_frame: true                 # counts the whole picture when no zone is drawn
+  near_miss:
+    enabled: false

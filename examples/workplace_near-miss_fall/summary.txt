@@ -1,0 +1,5 @@
+Video synthetic_safety.mp4 (00:30) [Industrial / workplace safety], 4 objects seen. 3 incidents:
+- 00:06-00:06 Person #1 and Bicycle #2: Near miss - came within 0.07 body-heights, closing at 2.9 body-heights/s (POSSIBLE CONTACT) [HIGH]
+- 00:18-00:24 Person #3: Fall / person down - fell and stayed down 6 s [HIGH]
+- 00:06-00:08 Bicycle #2: Running on the shop floor - moved at 3.0 body-heights/s (peak 3.3) [MEDIUM]
+No other unusual activity.

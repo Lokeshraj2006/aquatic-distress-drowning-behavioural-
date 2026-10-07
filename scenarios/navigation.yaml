@@ -1,0 +1,37 @@
+# Navigation assist: a WEARABLE / chest-mounted camera (the camera moves with the wearer).
+# Fixed-camera rules (zones, loitering, running, crowding, near miss, fall, scene baseline) assume
+# a still camera, so they are switched off. Only the approaching (looming) alert runs: an object
+# that grows fast in the middle of the view is coming at the wearer. Status: PROTOTYPE, offline
+# (works on a recorded walk; a live audio version would need real-time inference on a phone).
+scenario:
+  name: navigation
+  title: "Navigation assist (wearable camera, prototype)"
+  entity_word: Object
+  unit_word: body-heights
+  behavior_names:
+    approaching: "Approaching you"
+
+model:
+  classes: [0, 1, 2, 3, 16]   # person, bicycle, car, motorbike, dog
+
+video:
+  frame_stride: 1             # a moving camera needs every frame for clean size-growth estimates
+
+behaviors:
+  loitering: {enabled: false}
+  zone_intrusion: {enabled: false}
+  running: {enabled: false}
+  fall: {enabled: false}
+  crowding: {enabled: false}
+  near_miss: {enabled: false}
+  baseline: {enabled: false}
+  approaching:
+    enabled: true
+    classes: [0, 1, 2, 3, 16]
+    ttc_s: 2.5
+    center_band: 0.35
+    min_size_frac: 0.25
+    min_duration_s: 0.3
+
+chains:
+  enabled: false              # each alert stands on its own

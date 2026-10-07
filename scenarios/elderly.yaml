@@ -1,0 +1,39 @@
+# Scenario preset: elderly care (a room, corridor or care-home lounge).
+#
+# The headline is the FALL: a person whose box turns from upright to lying and stays
+# down. Long stillness is "No movement" (someone who is not moving for a minute is
+# worth a check). Walking out of the door is flagged when a zone is drawn over the exit.
+# Running, crowding and near-miss rules make no sense here, so they are switched off.
+#
+# The exit rule only counts at NIGHT (21:00-06:00) when the clock time is known:
+#   python run.py --video clip.mp4 --zones exit.json --scenario elderly --start-time 23:10
+# Without --start-time the exit rule runs all day (run.py prints a warning).
+#
+# Use it with:  python run.py --video samples/clip.mp4 --zones exit.json --scenario elderly
+
+scenario:
+  name: elderly
+  title: "Elderly care"
+  entity_word: Person
+  unit_word: body-heights
+  behavior_names:
+    fall: "Fall / person down"
+    loitering: "No movement"
+    zone_intrusion: "Left through the exit"       # draw the zone over the door
+
+behaviors:
+  fall:
+    enabled: true                     # the headline rule of this preset
+  zone_intrusion:
+    enabled: true
+    active_hours: "21:00-06:00"       # leaving at night is the risk (needs --start-time)
+  loitering:                          # reused as "no movement"
+    enabled: true
+    radius_bh: 0.3                    # barely moving at all...
+    min_duration_s: 60.0              # ...for a whole minute
+  running:
+    enabled: false
+  crowding:
+    enabled: false
+  near_miss:
+    enabled: false

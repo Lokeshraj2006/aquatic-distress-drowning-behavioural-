@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Aquatic Distress Behaviour Intelligence – Architecture",
+    "output": "pool-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "camera", "type": "external", "label": "Pool Camera", "sublabel": "video / file", "pos": [40, 300], "size": [130, 64] },
+    { "id": "detector", "type": "backend", "label": "Detector", "sublabel": "YOLO11n swimmer", "pos": [230, 300], "size": [130, 64], "tag": "stage 1" },
+    { "id": "tracker", "type": "backend", "label": "Tracker", "sublabel": "ByteTrack IDs", "pos": [420, 300], "size": [130, 64], "tag": "stage 1" },
+    { "id": "behaviour", "type": "backend", "label": "Behaviour", "sublabel": "posture · arms · head", "pos": [610, 300], "size": [140, 64], "tag": "stage 2" },
+    { "id": "reasoning", "type": "backend", "label": "Distress Reasoning", "sublabel": "risk · state machine", "pos": [810, 300], "size": [150, 64], "tag": "stage 3" },
+    { "id": "alert", "type": "security", "label": "Alert Event", "sublabel": "who · where · when", "pos": [1030, 300], "size": [140, 64], "tag": "risk %" },
+    { "id": "training", "type": "database", "label": "Training Kit", "sublabel": "13k pool images", "pos": [230, 120], "size": [130, 64] },
+    { "id": "pose", "type": "backend", "label": "Pose Model", "sublabel": "YOLO11n-pose", "pos": [610, 120], "size": [140, 64] },
+    { "id": "config", "type": "database", "label": "Zones + Config", "sublabel": "deep end · wall", "pos": [810, 120], "size": [150, 64] },
+    { "id": "dashboard", "type": "frontend", "label": "Lifeguard Dashboard", "sublabel": "status · replay", "pos": [1030, 480], "size": [140, 64], "tag": "stage 4" },
+    { "id": "speaker", "type": "frontend", "label": "Speaker Alert", "sublabel": "alarm + voice", "pos": [810, 480], "size": [150, 64] },
+    { "id": "evidence", "type": "frontend", "label": "Evidence", "sublabel": "snapshot · timeline", "pos": [1030, 640], "size": [140, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Offline pipeline on a laptop · run.py / app.py", "wraps": ["detector", "tracker", "behaviour", "reasoning", "alert"] }
+  ],
+  "connections": [
+    { "id": "camera-detector", "from": "camera", "to": "detector", "label": "frames", "variant": "emphasis" },
+    { "id": "detector-tracker", "from": "detector", "to": "tracker", "label": "boxes", "variant": "emphasis" },
+    { "id": "tracker-behaviour", "from": "tracker", "to": "behaviour", "label": "IDs", "variant": "emphasis" },
+    { "id": "behaviour-reasoning", "from": "behaviour", "to": "reasoning", "variant": "emphasis" },
+    { "id": "reasoning-alert", "from": "reasoning", "to": "alert", "variant": "emphasis" },
+    { "id": "training-detector", "from": "training", "to": "detector", "label": "best.pt", "variant": "dashed", "labelAt": [295, 242] },
+    { "id": "pose-behaviour", "from": "pose", "to": "behaviour", "label": "keypoints", "labelAt": [680, 242] },
+    { "id": "config-reasoning", "from": "config", "to": "reasoning", "label": "thresholds", "variant": "dashed", "labelAt": [885, 242] },
+    { "id": "alert-dashboard", "from": "alert", "to": "dashboard", "variant": "emphasis" },
+    { "id": "dashboard-speaker", "from": "dashboard", "to": "speaker", "label": "announce" },
+    { "id": "dashboard-evidence", "from": "dashboard", "to": "evidence" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Stages 1-2: see", "items": ["Detect and track every swimmer", "Posture, progress, arms, head every 0.5 s"] },
+    { "dot": "rose", "title": "Stage 3: understand", "items": ["Normal → slowing → upright → struggling", "Alert only after 5 s of combined signs"] },
+    { "dot": "amber", "title": "Stage 4: act", "items": ["Who, where, when, risk, evidence", "Spoken alert for the lifeguard"] }
+  ]
+}

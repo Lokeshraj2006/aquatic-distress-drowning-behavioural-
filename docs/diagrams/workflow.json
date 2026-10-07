@@ -1,0 +1,244 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "PS07 Run Workflow – One Video, Start to Report",
+    "output": "workflow.html",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Operator view"
+        },
+        "backend": {
+          "label": "Processing step"
+        },
+        "security": {
+          "label": "Decision"
+        },
+        "messagebus": {
+          "label": "Noise filter"
+        },
+        "database": {
+          "label": "Event record"
+        },
+        "external": {
+          "label": "Input"
+        }
+      }
+    }
+  },
+  "lanes": [
+    {
+      "id": "operator",
+      "label": "Operator"
+    },
+    {
+      "id": "pipeline",
+      "label": "Pipeline (per frame → per ID)"
+    },
+    {
+      "id": "noise",
+      "label": "Noise Control",
+      "variant": "exception"
+    }
+  ],
+  "phases": [
+    {
+      "id": "setup",
+      "label": "Setup",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "perceive",
+      "label": "Detect + measure",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "decide",
+      "label": "Decide + report",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "start",
+    "zone",
+    "frames",
+    "track",
+    "measure",
+    "decide",
+    "event",
+    "review"
+  ],
+  "nodes": [
+    {
+      "id": "start",
+      "lane": "operator",
+      "col": 0,
+      "type": "external",
+      "label": "Run Command",
+      "sublabel": "run.py --video",
+      "width": 132
+    },
+    {
+      "id": "zone",
+      "lane": "operator",
+      "col": 1,
+      "type": "frontend",
+      "label": "Zone Setup",
+      "sublabel": "4 clicks · optional",
+      "width": 132
+    },
+    {
+      "id": "frames",
+      "lane": "pipeline",
+      "col": 1,
+      "type": "backend",
+      "label": "Read Frames",
+      "sublabel": "640w · every 2nd",
+      "width": 132
+    },
+    {
+      "id": "track",
+      "lane": "pipeline",
+      "col": 2,
+      "type": "backend",
+      "label": "Detect + Track",
+      "sublabel": "YOLO11n + ByteTrack",
+      "width": 132
+    },
+    {
+      "id": "measure",
+      "lane": "pipeline",
+      "col": 3,
+      "type": "backend",
+      "label": "Measure",
+      "sublabel": "speed · dwell · feet",
+      "width": 132
+    },
+    {
+      "id": "decide",
+      "lane": "pipeline",
+      "col": 4,
+      "type": "security",
+      "label": "Rule Check",
+      "sublabel": "over threshold?",
+      "tag": "loiter · zone · run",
+      "width": 132
+    },
+    {
+      "id": "drop",
+      "lane": "noise",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Merge / Drop",
+      "sublabel": "gaps < 2 s · short",
+      "width": 132
+    },
+    {
+      "id": "event",
+      "lane": "pipeline",
+      "col": 5,
+      "type": "database",
+      "label": "Build Event",
+      "sublabel": "ID · times · confidence",
+      "width": 132
+    },
+    {
+      "id": "review",
+      "lane": "operator",
+      "col": 5,
+      "type": "frontend",
+      "label": "Report",
+      "sublabel": "json · video · snapshots",
+      "width": 132
+    }
+  ],
+  "edges": [
+    {
+      "id": "start-zone",
+      "from": "start",
+      "to": "zone",
+      "variant": "emphasis"
+    },
+    {
+      "id": "zone-frames",
+      "from": "zone",
+      "to": "frames",
+      "label": "video + zone",
+      "variant": "emphasis"
+    },
+    {
+      "id": "frames-track",
+      "from": "frames",
+      "to": "track",
+      "variant": "emphasis"
+    },
+    {
+      "id": "track-measure",
+      "from": "track",
+      "to": "measure",
+      "label": "ID tracks",
+      "variant": "emphasis"
+    },
+    {
+      "id": "measure-decide",
+      "from": "measure",
+      "to": "decide",
+      "variant": "emphasis"
+    },
+    {
+      "id": "decide-event",
+      "from": "decide",
+      "to": "event",
+      "label": "yes ≥ 1 s",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "decide-drop",
+      "from": "decide",
+      "to": "drop",
+      "label": "flicker",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "event-review",
+      "from": "event",
+      "to": "review",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Setup",
+      "items": [
+        "One command per video"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Decide",
+      "items": [
+        "Rules fire only after 1 s above threshold"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Report",
+      "items": [
+        "Every event: ID, behaviour, start/end, reason, confidence"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+# Scenario preset: agriculture (a camera over a crop field, orchard edge or farm gate).
+# Tracks PEOPLE and ANIMALS, so intruders of both kinds are named ("Person #3", "Cow #7").
+#
+# - Entering the field (zone rule) is the headline. It counts only at NIGHT (19:00-06:00)
+#   when the clock time is known; without --start-time it counts all day (with a warning).
+# - Lingering in the field and a herd gathering in it are reported too.
+# Status: PRESET ONLY. Unit-tested rules, no real farm footage. Crop or plant health is not covered.
+#
+# Use it with:  python run.py --video clip.mp4 --zones field.json --scenario agriculture --start-time 20:30
+
+scenario:
+  name: agriculture
+  title: "Agriculture (field intrusion by people or animals)"
+  entity_word: Object                 # several classes: names come from the class ("Person #3", "Cow #7")
+  unit_word: body-lengths
+  behavior_names:
+    zone_intrusion: "Entered the field"
+    loitering: "Lingering in the field"
+    running: "Running across the field"
+    crowding: "Herd or group in the field"
+
+model:
+  classes: [0, 16, 17, 18, 19]        # person, dog, horse, sheep, cow
+
+behaviors:
+  zone_intrusion:
+    enabled: true
+    min_duration_s: 2.0
+    active_hours: "19:00-06:00"       # night-time intrusion is what matters (needs --start-time)
+  loitering:
+    enabled: true
+    radius_bh: 0.8                    # animals graze around: a bigger circle
+    min_duration_s: 20.0
+  running:
+    enabled: true
+    start_speed_bh_s: 2.5
+    end_speed_bh_s: 2.0
+  crowding:
+    enabled: true
+    min_count: 4
+    min_duration_s: 10.0
+  fall:
+    enabled: false                    # lying down is normal for animals
+  near_miss:
+    enabled: false

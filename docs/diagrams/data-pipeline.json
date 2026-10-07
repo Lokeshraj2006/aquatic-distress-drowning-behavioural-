@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "PS07 Data Pipeline – Video to Incident Report",
+    "output": "data-pipeline.html",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      640
+    ]
+  },
+  "stages": [
+    {
+      "label": "Collect"
+    },
+    {
+      "label": "Preprocess"
+    },
+    {
+      "label": "Perceive"
+    },
+    {
+      "label": "Reason"
+    },
+    {
+      "label": "Output"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "clips",
+      "type": "external",
+      "label": "Team Clips",
+      "sublabel": "phone · 720p · 30–60 s",
+      "stage": 0,
+      "row": 0,
+      "tag": "6–8 scenarios"
+    },
+    {
+      "id": "jury",
+      "type": "external",
+      "label": "Jury Video",
+      "sublabel": "mp4 / webcam",
+      "stage": 0,
+      "row": 1,
+      "tag": "unseen"
+    },
+    {
+      "id": "labels",
+      "type": "database",
+      "label": "labels.csv",
+      "sublabel": "hand-written truth",
+      "stage": 0,
+      "row": 3
+    },
+    {
+      "id": "frames",
+      "type": "backend",
+      "label": "Frame Reader",
+      "sublabel": "640w · every 2nd",
+      "stage": 1,
+      "row": 0,
+      "tag": "frame → seconds"
+    },
+    {
+      "id": "zones",
+      "type": "database",
+      "label": "zones.json",
+      "sublabel": "4-point polygon",
+      "stage": 1,
+      "row": 2
+    },
+    {
+      "id": "detect",
+      "type": "backend",
+      "label": "YOLO11n",
+      "sublabel": "person boxes",
+      "stage": 2,
+      "row": 0,
+      "tag": "pretrained"
+    },
+    {
+      "id": "track",
+      "type": "backend",
+      "label": "ByteTrack",
+      "sublabel": "stable IDs",
+      "stage": 2,
+      "row": 1
+    },
+    {
+      "id": "rules",
+      "type": "backend",
+      "label": "Behaviour Engine",
+      "sublabel": "features → 3 rules",
+      "stage": 3,
+      "row": 1,
+      "tag": "speed · dwell · zone"
+    },
+    {
+      "id": "events",
+      "type": "database",
+      "label": "events.json",
+      "sublabel": "ID · behaviour · time",
+      "stage": 4,
+      "row": 1,
+      "tag": "confidence"
+    },
+    {
+      "id": "media",
+      "type": "frontend",
+      "label": "Evidence Media",
+      "sublabel": "video · snapshots",
+      "stage": 4,
+      "row": 0,
+      "tag": "trails"
+    },
+    {
+      "id": "report",
+      "type": "frontend",
+      "label": "Eval Report",
+      "sublabel": "precision · recall",
+      "stage": 4,
+      "row": 3
+    }
+  ],
+  "flows": [
+    {
+      "from": "clips",
+      "to": "frames",
+      "label": "raw video",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "from": "jury",
+      "to": "frames",
+      "label": "raw video",
+      "variant": "emphasis",
+      "route": "auto"
+    },
+    {
+      "from": "frames",
+      "to": "detect",
+      "label": "frames",
+      "variant": "emphasis"
+    },
+    {
+      "from": "detect",
+      "to": "track",
+      "label": "boxes",
+      "variant": "emphasis",
+      "route": "vertical-channel"
+    },
+    {
+      "from": "track",
+      "to": "rules",
+      "label": "ID tracks",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "from": "zones",
+      "to": "rules",
+      "label": "zone",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "bottom",
+      "via": [
+        [
+          745,
+          385
+        ]
+      ]
+    },
+    {
+      "from": "rules",
+      "to": "events",
+      "label": "events",
+      "variant": "emphasis",
+      "route": "straight"
+    },
+    {
+      "from": "rules",
+      "to": "media",
+      "label": "flags",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [
+        [
+          745,
+          157
+        ]
+      ]
+    },
+    {
+      "from": "events",
+      "to": "report",
+      "label": "predictions",
+      "variant": "dashed",
+      "route": "vertical-channel"
+    },
+    {
+      "from": "labels",
+      "to": "report",
+      "label": "ground truth",
+      "variant": "dashed",
+      "route": "straight"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Collect",
+      "items": [
+        "Fixed phone camera, one scenario per clip",
+        "Jury clips use the same command"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Process",
+      "items": [
+        "Resize to 640 wide, every 2nd frame",
+        "YOLO11n boxes → ByteTrack IDs"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Deliver",
+      "items": [
+        "events.json: who, what, when, why",
+        "Annotated video and snapshot per event"
+      ]
+    }
+  ]
+}
