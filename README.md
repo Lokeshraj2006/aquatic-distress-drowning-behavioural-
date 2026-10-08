@@ -773,3 +773,5 @@ Aquatic Distress Behaviour Intelligence combines **YOLO11n object detection, Byt
 The system is designed to move beyond simple object detection by analysing the behaviour of tracked swimmers over time. For the aquatic scenario, it focuses on identifying patterns associated with high-risk distress and possible submersion.
 
 The repository provides the required installation instructions, configuration files, scenario presets, command-line execution, Streamlit dashboard, sample inputs, generated outputs, evaluation scripts, and reproducible demonstrations. This makes the project suitable for demonstrating the complete pipeline from video input to behaviour analysis, incident generation, evidence creation, and final reporting.
+#   H e x T e c h  
+ 
