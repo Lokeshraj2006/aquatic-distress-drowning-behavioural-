@@ -14,3 +14,4 @@ samples/uploads/
 *.onnx
 
 .streamlit/secrets.toml
+pytest-final.log
