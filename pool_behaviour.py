@@ -334,17 +334,17 @@ def _one_sample(tid, ts, idx, tr, t, box, centre, area, usual_area, scale, kp_tr
         ang = torso_angle(kp_track[f], kp_conf) if f in kp_track else None
         if ang is not None:
             angles.append(ang)
-        if state:
-            votes.append(STATE_TO_POSTURE.get(state, "vertical"))
-            sources.append("detector")
-        elif ang is not None:
+        if ang is not None:
             votes.append(posture_from_angle(ang, pcfg))
             sources.append("torso_angle")
+        elif state:
+            votes.append(STATE_TO_POSTURE.get(state, "vertical"))
+            sources.append("detector")
         else:
             votes.append(posture_from_box(box[i], usual_area, pcfg))
             sources.append("box_shape")
-    posture = max(set(votes), key=votes.count)
-    state_source = max(set(sources), key=sources.count)
+            posture = max(set(votes), key=votes.count)
+            state_source = max(set(sources), key=sources.count)
 
     # arms: wrist peaks relative to the shoulders (pose), else the top of the box bobbing
     arm_vals = [(tt, a) for _, tt, k in raws if (a := arm_signal(k, scale, kp_conf)) is not None]
@@ -356,8 +356,12 @@ def _one_sample(tid, ts, idx, tr, t, box, centre, area, usual_area, scale, kp_tr
         amp, rate, reg = _rhythm(box[idx, 1] / scale, t[idx], float(pcfg["arm_peak_prominence"]))
         arm_source = "box"
     travelling = progress >= 0.5 and displacement > float(pcfg["displacement_low_bh_s"])
+
     if amp >= float(pcfg["arm_min_amp"]) and rate >= float(pcfg["arm_min_hz"]):
-        arm_motion = "stroking" if (travelling and posture in ("horizontal", "diagonal")) else "repeated"
+        if travelling and posture in ("horizontal", "diagonal"):
+             arm_motion = "stroking"
+        else:
+             arm_motion = "repeated"
     elif amp <= float(pcfg["arm_calm_amp"]) or rate < float(pcfg["arm_none_hz"]):
         arm_motion = "calm"
     else:

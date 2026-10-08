@@ -175,6 +175,44 @@ def _tracked_rows(result, frame_idx: int, t: float) -> list[list]:
     return rows
 
 
+def _stabilize_track_ids(rows: list[list], max_gap_s: float = 3.0, max_distance_px: float = 80.0) -> list[list]:
+    """Reuse a previous person ID when ByteTrack creates a new ID for the same near box.
+
+    This is intentionally conservative: only a recent track within the configured spatial
+    distance is re-associated. A track that disappears for longer than max_gap_s, or whose
+    new box is far away, remains a new person ID.
+    """
+    ordered = sorted((list(row) for row in rows), key=lambda row: (float(row[0]), float(row[1])))
+    last_seen: dict[int, tuple[float, float, float]] = {}
+    output = []
+
+    for row in ordered:
+        frame_idx = int(row[0])
+        t = float(row[1])
+        new_id = int(row[2])
+        x1, y1, x2, y2 = [float(v) for v in row[3:7]]
+        center = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
+        candidates = []
+        for old_id, (old_t, old_center_x, old_center_y) in last_seen.items():
+            gap = t - old_t
+            if gap < 0 or gap > max_gap_s:
+                continue
+            distance = math.hypot(center[0] - old_center_x, center[1] - old_center_y)
+            if distance <= max_distance_px:
+                candidates.append((distance, gap, old_id))
+
+        if candidates:
+            _, _, stable_id = min(candidates)
+            row[2] = stable_id
+        else:
+            stable_id = new_id
+
+        last_seen[stable_id] = (t, center[0], center[1])
+        output.append(row)
+
+    return output
+
+
 def _fmt_eta(seconds: float) -> str:
     seconds = int(max(0, seconds))
     return f"{seconds // 60}:{seconds % 60:02d}"
@@ -275,6 +313,7 @@ def track_video(video_path, cfg: dict, device_override=None, max_seconds=None, s
     finally:
         cap.release()
 
+    detections = _stabilize_track_ids(detections, max_gap_s=3.0, max_distance_px=80.0)
     n_frames_read = frame_idx
     if n_frames_read == 0:
         raise RuntimeError(f"Video '{video_path}' opened but no frame could be read.")

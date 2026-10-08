@@ -3,20 +3,17 @@
 # for people near and far from the camera, and on any camera / resolution.
 # Times are in seconds, converted from frame numbers with each video's own FPS.
 
-video:
-  resize_width: 640        # frames are resized to this width before detection
-  frame_stride: 2          # process every Nth frame (1 = every frame, 2 = half the work)
-  max_seconds: 0           # 0 = whole video; >0 = only the first N seconds
-
 model:
-  weights: models/yolo11n.pt      # pretrained COCO model, downloads automatically on first run
-  device: auto             # auto | cpu | 0 (first GPU)
-  conf: 0.30               # minimum detection confidence
+  weights: yolo11s.pt
+  device: auto
+  conf: 0.40
   iou: 0.50
-  imgsz: 640
+  imgsz: 960
   tracker: bytetrack_custom.yaml
-  pose_weights: models/yolo11n-pose.pt
-  classes: [0]             # COCO class ids to track (0 = person); presets change this
+
+video:
+  resize_width: 640
+  frame_stride: 1
 
 features:
   smoothing_s: 0.5         # average foot point / box height over this window (removes box jitter)
@@ -192,3 +189,11 @@ scenario:                  # wording only; presets in scenarios/ override this (
   entity_word: Person      # "Person #3"
   unit_word: body-heights  # unit for speeds and distances
   behavior_names: {}       # e.g. {running: "Speeding"}; empty = default names
+
+weights:
+  vertical: 0.25
+  low_displacement: 0.25
+  repeated_arms: 0.25
+  unstable_head: 0.15
+  transition: 0.10
+  passive_distress: 0.30

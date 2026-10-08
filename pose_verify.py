@@ -24,7 +24,7 @@ import numpy as np
 from tracker import resize_frame, resolve_device, resolve_weights, to_numpy
 
 POSE_BEHAVIORS = ("running", "loitering")      # zone_intrusion has no posture signature
-PAD_FRACTION = 0.20                            # crop = person box grown by 20 % each side (DESIGN 3.5)
+PAD_FRACTION = 0.40                            # crop = person box grown by 20 % each side (DESIGN 3.5)
 MIN_CROP_PX = 8                                # ignore degenerate crops
 
 # COCO keypoint indices used by the check.

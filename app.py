@@ -29,6 +29,7 @@ import streamlit as st  # noqa: E402
 
 import ui_helpers as ui  # noqa: E402
 import utils  # noqa: E402
+from ps_conversation import ConversationIndex, PersistentReferenceMemory  # noqa: E402
 
 PITCH = ("Early warning for lifeguards: it tracks every swimmer, watches how their behaviour changes over time, "
          "and raises an evidence-backed alert saying who, where, when and why, out loud.")
@@ -191,6 +192,51 @@ def show_near_and_unusual(data: dict, cfg: dict) -> None:
             st.caption("Nothing stood out from the scene's typical behaviour.")
 
 
+def show_conversation_query(folder: Path) -> None:
+    """Ask grounded questions over the current result folder using the verified adapter."""
+    reference_path = ROOT / "outputs" / "_ui" / "references.sqlite"
+    index = ConversationIndex(folder, PersistentReferenceMemory(reference_path))
+    st.subheader("Ask the Video")
+    st.caption("Questions are answered only from tracker IDs, risk curves, events, timelines, and evidence in this result folder.")
+    suggestion = st.text_input(
+        "Ask a grounded question",
+        value="Which swimmer has the highest risk around 00:04?",
+        key="conversation_question",
+        placeholder="e.g. What happened around 00:04?",
+    )
+    if st.button("Ask", key="conversation_ask", type="primary"):
+        answer = index.answer(suggestion)
+        st.session_state["conversation_answer"] = answer
+    conversation_key = f"conversation_answer::{folder.resolve()}"
+    answer = st.session_state.get(conversation_key)
+    if answer is None or st.session_state.get("conversation_query") != suggestion:
+        answer = index.answer(suggestion)
+        st.session_state[conversation_key] = answer
+        st.session_state["conversation_query"] = suggestion
+    record = answer.get("record", {})
+    st.markdown(f"**Answer:** {answer.get('answer', '')}")
+    if record.get("track_id") is not None:
+        st.caption(f"Tracker ID #{record['track_id']} · source: {record.get('source', 'verified')} · "
+                   f"confidence: {record.get('confidence') or 'not recorded'}")
+    evidence_path = record.get("evidence_path")
+    if evidence_path:
+        evidence = Path(evidence_path)
+        if not evidence.is_absolute():
+            evidence = folder / evidence
+        if evidence.is_file():
+            if evidence.suffix.lower() in {".mp4", ".mov", ".avi", ".mkv", ".webm"}:
+                st.video(str(evidence))
+                st.caption("Verified evidence video")
+            elif evidence.suffix.lower() in {".jpg", ".jpeg", ".png", ".bmp"}:
+                st.image(str(evidence), caption="Verified evidence frame")
+            else:
+                st.caption(f"Verified evidence: {evidence}")
+        else:
+            st.caption("Evidence frame unavailable in the current result folder.")
+    elif answer.get("status") == "clarification_required":
+        st.info("Persistent camera references are user-defined and are not treated as verified evidence.")
+
+
 @st.fragment
 def show_results(folder_str: str, source: str) -> None:
     """Metric tiles and the result tabs for one results folder. A fragment: switching a tab does not rerun the page."""
@@ -235,6 +281,8 @@ def render_results(folder: Path, data: dict, source: str) -> None:
             pool_ui.render_pool_panel(folder, data)
         except Exception as exc:                                     # never lose the normal results over it
             st.warning(f"Lifeguard dashboard could not be drawn ({type(exc).__name__}: {exc}).")
+
+    show_conversation_query(folder)
 
     # Heavy tabs (the embedded report, the long annotated video) only run while they are the open tab.
     tabs = st.tabs(RESULT_TABS, on_change="rerun", key="result_tab")
@@ -333,8 +381,6 @@ if "last_run" not in st.session_state:             # dict about the latest Run (
         label = next((lbl for lbl, p in ui.list_videos() if ui.rel_path(p) == restored["video"]), None)
         if label:
             st.session_state["sample"] = label
-        if restored.get("scenario") in utils.list_scenarios():
-            st.session_state["scenario"] = restored["scenario"]
 st.session_state.setdefault("_uploads", {})         # uploaded file id -> saved path ("" = rejected), no rewrite per rerun
 if st.session_state.pop("_clear_open_results", False):
     st.session_state["open_results"] = None         # a new run's results replace any folder opened earlier
@@ -393,7 +439,11 @@ with st.sidebar:
     st.subheader("2. Scenario")
     names = utils.list_scenarios()
     infos = {n: cached_scenario(n) for n in names}
-    scenario = st.selectbox("Scenario preset", names, key="scenario", index=names.index("pool") if "pool" in names else 0,
+    restored_scenario = st.session_state.get("last_run", {}).get("scenario")
+    restored_index = names.index(restored_scenario) if restored_scenario in names else (
+        names.index("pool") if "pool" in names else 0
+    )
+    scenario = st.selectbox("Scenario preset", names, key="scenario", index=restored_index,
                             format_func=lambda n: infos[n]["title"]) if names else None
     if scenario:
         info = infos[scenario]
@@ -459,9 +509,9 @@ with st.sidebar:
                 start_time_ok = start_time.strip()
             except ValueError as exc:
                 st.warning(f"Start time ignored: {exc}")
-        reuse = st.toggle("Reuse cached detections if available", value=True, key="reuse",
-                          help="Skips YOLO when the same video was analysed before with the same stride and classes: "
-                               "seconds instead of minutes.")
+        reuse = st.toggle("Reuse cached detections if available", value=False, key="reuse",
+                          help="Opt in to skip YOLO when the same video was analysed before with the same stride and "
+                               "classes. Fresh tracking is the default so tracker-ID fixes are not bypassed.")
         skip_video = st.toggle("Skip videos (faster)", key="skip_video",
                                help="Do not write annotated.mp4 and highlights.mp4.")
         pose = st.toggle("Pose check", key="pose", help="Second opinion from a pose model for running and loitering events.")
